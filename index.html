@@ -1,0 +1,176 @@
+from kivy.app import App
+from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.label import Label
+from kivy.uix.textinput import TextInput
+from kivy.uix.button import Button
+from kivy.uix.scrollview import ScrollView
+from kivy.uix.gridlayout import GridLayout
+from kivy.core.window import Window
+
+Window.clearcolor = (0.94, 0.95, 0.96, 1)
+
+fuarlar = [
+    # 1. TARIM & HAYVANCILIK
+    {"ad": "AgroExpo Uluslararası Tarım Fuarı", "sektor": "Tarım & Hayvancılık", "ulke": "Türkiye", "sehir": "İzmir", "tarih": "Şubat 2027"},
+    {"ad": "EIMA International Tarım Makineleri", "sektor": "Tarım & Hayvancılık", "ulke": "İtalya", "sehir": "Bologna", "tarih": "Kasım 2026"},
+    {"ad": "BURTARIM Bursa Tarım Fuarı", "sektor": "Tarım & Hayvancılık", "ulke": "Türkiye", "sehir": "Bursa", "tarih": "Ekim 2026"},
+    {"ad": "SIA Paris Uluslararası Tarım Fuarı", "sektor": "Tarım & Hayvancılık", "ulke": "Fransa", "sehir": "Paris", "tarih": "Şubat 2027"},
+    
+    # 2. MAKİNE & METAL İŞLEME
+    {"ad": "EMO Hannover Metal İşleme", "sektor": "Makine & Metal İşleme", "ulke": "Almanya", "sehir": "Hannover", "tarih": "Eylül 2027"},
+    {"ad": "MAKTEK Avrasya Takım Tezgahları", "sektor": "Makine & Metal İşleme", "ulke": "Türkiye", "sehir": "İstanbul", "tarih": "Ekim 2026"},
+    {"ad": "IMTS Chicago İmalat Teknolojileri", "sektor": "Makine & Metal İşleme", "ulke": "ABD", "sehir": "Chicago", "tarih": "Eylül 2026"},
+    {"ad": "BUMATECH Bursa Makine Teknolojileri", "sektor": "Makine & Metal İşleme", "ulke": "Türkiye", "sehir": "Bursa", "tarih": "Kasım 2026"},
+
+    # 3. MADENCİLİK & İŞ MAKİNELERİ
+    {"ad": "Bauma Mining & Construction", "sektor": "Madencilik & İş Makineleri", "ulke": "Almanya", "sehir": "Münih", "tarih": "Nisan 2028"},
+    {"ad": "Mining Türkiye Uluslararası Madencilik", "sektor": "Madencilik & İş Makineleri", "ulke": "Türkiye", "sehir": "İstanbul", "tarih": "Aralık 2026"},
+    {"ad": "MINExpo International", "sektor": "Madencilik & İş Makineleri", "ulke": "ABD", "sehir": "Las Vegas", "tarih": "Eylül 2026"},
+    {"ad": "MARBLE İzmir Mermer ve Doğaltaş Fuarı", "sektor": "Madencilik & İş Makineleri", "ulke": "Türkiye", "sehir": "İzmir", "tarih": "Nisan 2027"},
+
+    # 4. ENERJİ & PETROL & ÇEVRE
+    {"ad": "ADIPEC Petrol, Gaz ve Enerji Fuarı", "sektor": "Enerji & Doğal Kaynaklar", "ulke": "BAE", "sehir": "Abu Dabi", "tarih": "Kasım 2026"},
+    {"ad": "ICCI Uluslararası Enerji ve Çevre", "sektor": "Enerji & Doğal Kaynaklar", "ulke": "Türkiye", "sehir": "İstanbul", "tarih": "Mayıs 2027"},
+    {"ad": "Intersolar Europe Güneş Enerjisi", "sektor": "Enerji & Doğal Kaynaklar", "ulke": "Almanya", "sehir": "Münih", "tarih": "Haziran 2027"},
+    {"ad": "Ecomonda Çevresel Teknolojiler", "sektor": "Enerji & Doğal Kaynaklar", "ulke": "İtalya", "sehir": "Rimini", "tarih": "Kasım 2026"},
+
+    # 5. GIDA, İÇECEK & AMBALAJ
+    {"ad": "Anuga FoodTec Gıda Teknolojileri", "sektor": "Gıda & İçecek Sanayi", "ulke": "Almanya", "sehir": "Köln", "tarih": "Mart 2027"},
+    {"ad": "WorldFood İstanbul Uluslararası Gıda", "sektor": "Gıda & İçecek Sanayi", "ulke": "Türkiye", "sehir": "İstanbul", "tarih": "Eylül 2026"},
+    {"ad": "SIAL Paris Uluslararası Gıda Fuarı", "sektor": "Gıda & İçecek Sanayi", "ulke": "Fransa", "sehir": "Paris", "tarih": "Ekim 2026"},
+    {"ad": "Avrasya Ambalaj İstanbul Fuarı", "sektor": "Gıda & İçecek Sanayi", "ulke": "Türkiye", "sehir": "İstanbul", "tarih": "Ekim 2026"},
+
+    # 6. TEKSTİL, MODA & AYAKKABI
+    {"ad": "Première Vision Paris Tekstil Fuarı", "sektor": "Tekstil & Moda", "ulke": "Fransa", "sehir": "Paris", "tarih": "Şubat 2027"},
+    {"ad": "TEXBRIDGE İstanbul Kumaş ve Tekstil", "sektor": "Tekstil & Moda", "ulke": "Türkiye", "sehir": "İstanbul", "tarih": "Kasım 2026"},
+    {"ad": "AYMOD Uluslararası Ayakkabı Moda Fuarı", "sektor": "Tekstil & Moda", "ulke": "Türkiye", "sehir": "İstanbul", "tarih": "Eylül 2026"},
+    {"ad": "Milano Unica Tekstil ve Aksesuar", "sektor": "Tekstil & Moda", "ulke": "İtalya", "sehir": "Milano", "tarih": "Şubat 2027"},
+
+    # 7. İNŞAAT, YAPI & MOBİLYA
+    {"ad": "Yapı Fuarı - Turkeybuild İstanbul", "sektor": "İnşaat & Yapı Malzemeleri", "ulke": "Türkiye", "sehir": "İstanbul", "tarih": "Nisan 2027"},
+    {"ad": "The Big 5 Dubai Uluslararası İnşaat", "sektor": "İnşaat & Yapı Malzemeleri", "ulke": "BAE", "sehir": "Dubai", "tarih": "Kasım 2026"},
+    {"ad": "MODEKO İzmir Mobilya Fuarı", "sektor": "Mobilya & Dekorasyon", "ulke": "Türkiye", "sehir": "İzmir", "tarih": "Mart 2027"},
+    {"ad": "Salone del Mobile Milano", "sektor": "Mobilya & Dekorasyon", "ulke": "İtalya", "sehir": "Milano", "tarih": "Nisan 2027"},
+
+    # 8. SAĞLIK, MEDİKAL & KOZMETİK
+    {"ad": "MEDICA Uluslararası Tıp ve Medikal", "sektor": "Sağlık & Medikal", "ulke": "Almanya", "sehir": "Düsseldorf", "tarih": "Kasım 2026"},
+    {"ad": "Expomed Eurasia Tıbbi Analiz ve Teşhis", "sektor": "Sağlık & Medikal", "ulke": "Türkiye", "sehir": "İstanbul", "tarih": "Nisan 2027"},
+    {"ad": "BeautyEurasia Kozmetik ve Güzellik", "sektor": "Kozmetik & Güzellik", "ulke": "Türkiye", "sehir": "İstanbul", "tarih": "Haziran 2027"},
+    {"ad": "Cosmoprof Worldwide Bologna", "sektor": "Kozmetik & Güzellik", "ulke": "İtalya", "sehir": "Bologna", "tarih": "Mart 2027"},
+
+    # 9. OTOMOTİV, LOJİSTİK & ULAŞIM
+    {"ad": "Automechanika Frankfurt", "sektor": "Otomotiv & Yan Sanayi", "ulke": "Almanya", "sehir": "Frankfurt", "tarih": "Eylül 2026"},
+    {"ad": "Automechanika İstanbul", "sektor": "Otomotiv & Yan Sanayi", "ulke": "Türkiye", "sehir": "İstanbul", "tarih": "Haziran 2027"},
+    {"ad": "Logitrans Uluslararası Lojistik Fuarı", "sektor": "Lojistik & Taşımacılık", "ulke": "Türkiye", "sehir": "İstanbul", "tarih": "Kasım 2026"},
+    {"ad": "Transport Logistic Münih", "sektor": "Lojistik & Taşımacılık", "ulke": "Almanya", "sehir": "Münih", "tarih": "Mayıs 2027"},
+
+    # 10. TEKNOLOJİ, BİLİŞİM & SAVUNMA
+    {"ad": "CES (Consumer Electronics Show)", "sektor": "Yapay Zekâ & Teknoloji", "ulke": "ABD", "sehir": "Las Vegas", "tarih": "Ocak 2027"},
+    {"ad": "GITEX Global Technology Week", "sektor": "Bilişim & Yazılım", "ulke": "BAE", "sehir": "Dubai", "tarih": "Ekim 2026"},
+    {"ad": "IDEF Uluslararası Savunma Sanayii", "sektor": "Savunma & Havacılık", "ulke": "Türkiye", "sehir": "İstanbul", "tarih": "Temmuz 2027"},
+    {"ad": "SABDEX Savunma Sanayi Fuarı", "sektor": "Savunma & Havacılık", "ulke": "Türkiye", "sehir": "Ankara", "tarih": "Ekim 2026"},
+    {"ad": "MWC Barcelona Mobil Dünya Kongresi", "sektor": "Bilişim & Yazılım", "ulke": "İspanya", "sehir": "Barselona", "tarih": "Şubat 2027"},
+    {"ad": "IFA Berlin Tüketici Elektroniği", "sektor": "Yapay Zekâ & Teknoloji", "ulke": "Almanya", "sehir": "Berlin", "tarih": "Eylül 2026"},
+
+    # 11. TURİZM, EĞİTİM & DİĞER
+    {"ad": "EMITT Doğu Akdeniz Turizm Fuarı", "sektor": "Turizm & Seyahat", "ulke": "Türkiye", "sehir": "İstanbul", "tarih": "Şubat 2027"},
+    {"ad": "ITB Berlin Uluslararası Turizm Fuarı", "sektor": "Turizm & Seyahat", "ulke": "Almanya", "sehir": "Berlin", "tarih": "Mart 2027"},
+    {"ad": "IEFT Yurt Dışı Eğitim Fuarı", "sektor": "Eğitim & Danışmanlık", "ulke": "Türkiye", "sehir": "İstanbul", "tarih": "Ekim 2026"},
+    {"ad": "SINDEX Endüstriyel Otomasyon", "sektor": "Makine & Metal İşleme", "ulke": "İsviçre", "sehir": "Bern", "tarih": "Eylül 2026"},
+    {"ad": "Plast Eurasia İstanbul Plastik Fuarı", "sektor": "Kimya & Plastik", "ulke": "Türkiye", "sehir": "İstanbul", "tarih": "Aralık 2026"},
+    {"ad": "K Show Uluslararası Plastik ve Kauçuk", "sektor": "Kimya & Plastik", "ulke": "Almanya", "sehir": "Düsseldorf", "tarih": "Ekim 2028"},
+    {"ad": "Boat Show İstanbul Yat ve Tekne Fuarı", "sektor": "Denizcilik & Yat", "ulke": "Türkiye", "sehir": "İstanbul", "tarih": "Şubat 2027"},
+    {"ad": "METSTRADE Amsterdam Denizcilik Fuarı", "sektor": "Denizcilik & Yat", "ulke": "Hollanda", "sehir": "Amsterdam", "tarih": "Kasım 2026"}
+]
+
+class FuarUygulamasi(App):
+    def build(self):
+        self.title = "Dünya ve Türkiye Sektörel Fuarlar Rehberi"
+        main_layout = BoxLayout(orientation='vertical', padding=10, spacing=10)
+
+        # Başlık Bilgisi
+        title_label = Label(
+            text=f"[b]DÜNYA FUARLARI REHBERİ ({len(fuarlar)} KAYIT)[/b]",
+            markup=True,
+            font_size='18sp',
+            size_hint_y=None,
+            height=45,
+            color=(0.12, 0.23, 0.54, 1)
+        )
+        main_layout.add_widget(title_label)
+
+        # Arama Paneli
+        search_layout = BoxLayout(orientation='horizontal', size_hint_y=None, height=45, spacing=5)
+        
+        self.search_input = TextInput(
+            hint_text='Fuar, sektör, ülke veya şehir ara...',
+            multiline=False,
+            font_size='14sp'
+        )
+        search_layout.add_widget(self.search_input)
+
+        btn_ara = Button(text='ARA', size_hint_x=0.25, background_color=(0.12, 0.23, 0.54, 1))
+        btn_ara.bind(on_press=self.fuar_ara)
+        search_layout.add_widget(btn_ara)
+
+        btn_hepsi = Button(text='TÜMÜ', size_hint_x=0.25, background_color=(0.4, 0.4, 0.4, 1))
+        btn_hepsi.bind(on_press=self.tumunu_goster)
+        search_layout.add_widget(btn_hepsi)
+
+        main_layout.add_widget(search_layout)
+
+        # Liste Alanı
+        scroll = ScrollView()
+        self.list_layout = GridLayout(cols=1, spacing=10, size_hint_y=None)
+        self.list_layout.bind(minimum_height=self.list_layout.setter('height'))
+        scroll.add_widget(self.list_layout)
+
+        main_layout.add_widget(scroll)
+
+        self.liste_guncelle(fuarlar)
+        return main_layout
+
+    def liste_guncelle(self, veri_listesi):
+        self.list_layout.clear_widgets()
+        for fuar in veri_listesi:
+            card = BoxLayout(orientation='vertical', padding=10, size_hint_y=None, height=95)
+            
+            lbl_ad = Label(
+                text=f"[b]{fuar['ad']}[/b]", 
+                markup=True, 
+                color=(0.12, 0.23, 0.54, 1),
+                font_size='15sp',
+                halign='left', valign='middle'
+            )
+            lbl_ad.bind(size=lbl_ad.setter('text_size'))
+            
+            lbl_detay = Label(
+                text=f"Sektör: {fuar['sektor']} | Konum: {fuar['sehir']}, {fuar['ulke']} | Tarih: {fuar['tarih']}",
+                color=(0.2, 0.2, 0.2, 1),
+                font_size='12sp',
+                halign='left', valign='middle'
+            )
+            lbl_detay.bind(size=lbl_detay.setter('text_size'))
+
+            card.add_widget(lbl_ad)
+            card.add_widget(lbl_detay)
+            self.list_layout.add_widget(card)
+
+    def fuar_ara(self, instance):
+        query = self.search_input.text.strip().lower()
+        if not query:
+            self.liste_guncelle(fuarlar)
+            return
+        
+        filtrelenmis = [
+            f for f in fuarlar
+            if query in f["ad"].lower() or query in f["sektor"].lower() or query in f["ulke"].lower() or query in f["sehir"].lower()
+        ]
+        self.liste_guncelle(filtrelenmis)
+
+    def tumunu_goster(self, instance):
+        self.search_input.text = ''
+        self.liste_guncelle(fuarlar)
+
+if __name__ == '__main__':
+    FuarUygulamasi().run()
